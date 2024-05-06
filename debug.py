@@ -92,7 +92,9 @@ class Debug:
     @staticmethod
     def LogError(message):
         Debug.prefixActive = True
-        Debug.__log("❌ - " + message, Style.FAIL + Style.BOLD)
+        if Debug.emojisActive:
+            message = "❌ - " + message
+        Debug.__log(message, Style.FAIL + Style.BOLD)
         if Debug.blocking == True:
             sys.exit()
         Debug.prefixActive = False

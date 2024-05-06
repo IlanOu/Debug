@@ -23,6 +23,15 @@ Debug.LogWhisper("Hello World !")
 Debug.LogColor("Hello World !", Style.RED)
 ```
 
+You have parameters for the debugger :
+
+```py
+Debug.blocking = False
+Debug.emojisActive = False
+Debug.prefixActive = False
+Debug.verbose = False
+```
+
 ### Style
 
 ```py
