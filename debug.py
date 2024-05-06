@@ -1,19 +1,3 @@
-"""
-How to use this gist ?
-Debug :
-Debug.Log("Hello World !")
-Debug.LogError("Hello World !")
-Debug.LogWarning("Hello World !")
-Debug.LogSuccess("Hello World !")
-Debug.LogWhisper("Hello World !")
-Colors :
-print(Colors.WARNING + "Hello" + Colors.ENDC)
-print(Colors.BLUE + "Hello" + Colors.ENDC)
-print(Colors.HEADER + "Hello" + Colors.ENDC)
-print(Colors.UNDERLINE + "Hello" + Colors.ENDC)
-"""
-
-
 import datetime
 import inspect
 import sys
@@ -52,7 +36,7 @@ class Debug:
     emojisActive = True
 
     @staticmethod
-    def _get_log_prefix(level, class_name, func_name, line_number):
+    def __get_log_prefix(level, class_name, func_name, line_number):
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         class_name_str = str(class_name)
         func_name_str = str(func_name)
@@ -71,7 +55,7 @@ class Debug:
         return prefix
 
     @staticmethod
-    def _log(message, level=Style.DARK_GRAY):
+    def __log(message, level=Style.DARK_GRAY):
         frame = inspect.currentframe().f_back.f_back
         line_number = frame.f_lineno
         class_name = frame.f_locals.get('self', '__main__').__class__.__name__
@@ -79,47 +63,46 @@ class Debug:
         prefix = ""
 
         if Debug.prefixActive:
-            prefix = Debug._get_log_prefix(level, class_name, func_name,
+            prefix = Debug.__get_log_prefix(level, class_name, func_name,
                                         line_number)
 
         print(f"{level}{prefix}{level}{message}{Style.RESET}")
 
     @staticmethod
     def Log(message):
-        Debug._log(message)
+        Debug.__log(message)
 
     @staticmethod
     def LogWhisper(message):
         if Debug.verbose:
-            Debug._log(message, Style.DARK_GRAY + Style.DIM + Style.ITALIC)
+            Debug.__log(message, Style.DARK_GRAY + Style.DIM + Style.ITALIC)
 
     @staticmethod
     def LogSuccess(message):
         if Debug.emojisActive:
             message = "✅ - " + message
-        Debug._log(message, Style.OK_GREEN)
+        Debug.__log(message, Style.OK_GREEN)
 
     @staticmethod
     def LogWarning(message):
         if Debug.emojisActive:
             message = "❕ - " + message
-        Debug._log(message, Style.WARNING)
+        Debug.__log(message, Style.WARNING)
 
     @staticmethod
     def LogError(message):
         Debug.prefixActive = True
-        Debug._log("❌ - " + message, Style.FAIL + Style.BOLD)
+        Debug.__log("❌ - " + message, Style.FAIL + Style.BOLD)
         if Debug.blocking == True:
             sys.exit()
         Debug.prefixActive = False
         
-    
 
     @staticmethod
     def LogColor(message, style=Style.RESET):
         if isinstance(style, list):
             style = "".join(style)
-        Debug._log(style + message, Style.WARNING)
+        Debug.__log(style + message, Style.WARNING)
 
 
 
