@@ -1,8 +1,0 @@
-README.md
-setup.py
-debug/__init__.py
-debug/debug.py
-debug.egg-info/PKG-INFO
-debug.egg-info/SOURCES.txt
-debug.egg-info/dependency_links.txt
-debug.egg-info/top_level.txt
