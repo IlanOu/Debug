@@ -1,14 +1,20 @@
 # Debugger
 
-Simple debugger Python pour afficher du texte dans la console.
+Simple debugger Python to show colored text in command prompt.
 
-## Comment l'installer ?
+## Installation ?
 
 ```bash
 pip install git+https://github.com/IlanOu/Debug.git
 ```
 
-## Exemples
+## Examples
+
+Import the library
+
+```py
+from debug import Debug, Style
+```
 
 ### Debug
 
