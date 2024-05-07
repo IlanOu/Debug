@@ -26,7 +26,7 @@ class Style:
     UNDERLINE = '\033[4m'
 
     RESET = '\033[0m'
-    SEPARATOR = '- ' * 40 + '\n'
+    SEPARATOR = '.' * 50 + '\n'
 
 
 class Debug:
