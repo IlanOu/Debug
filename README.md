@@ -34,11 +34,11 @@ Debug.LogColor("Hello World !", Style.RED)
 
 # Separators
 Debug.LogSeparator() 
-Debug.LogSeparator("Yey") 
-Debug.LogSeparator("Yey", Style.BOLD)
+Debug.LogSeparator("Separator") 
+Debug.LogSeparator("Separator", Style.BOLD)
 
-Debug.LogFatSeparator("Yey")  
-Debug.LogFatSeparator("Yey", Style.BOLD)
+Debug.LogFatSeparator("Separator")  
+Debug.LogFatSeparator("Separator", Style.BOLD)
 ```
 
 #### You have parameters for the debugger
