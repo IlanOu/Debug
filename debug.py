@@ -51,7 +51,7 @@ class Debug:
         else:
             func_name_str += "() "
 
-        prefix = f"{Style.DIM}{Style.SEPARATOR}{level}[{current_time}] \n{Style.BOLD}{class_name_str}{func_name_str}{Style.RESET}{level}{Style.DIM}Line {line_number}:{Style.RESET} \n"
+        prefix = f"{Style.DIM}{Style.SEPARATOR}{level}[{current_time}] - {Style.BOLD}{class_name_str}{func_name_str}{Style.RESET}{level}{Style.DIM}Line {line_number}:{Style.RESET} \n"
         return prefix
 
     @staticmethod
@@ -171,7 +171,6 @@ class Debug:
             Debug._log(str(to_print), style)
         
         Debug.prefixActive = prefix_active
-
 
 
 __all__ = ["Style", "Debug"]
