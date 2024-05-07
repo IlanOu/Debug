@@ -29,7 +29,7 @@ Debug.LogSuccess("Hello World !")
 Debug.LogWhisper("Hello World !")
 
 # Custom
-Debug.LogColor("Hello World !", Style.RED)
+Debug.LogColor("Hello World !", Style.RED + Style.BOLD)
 
 
 # Separators
