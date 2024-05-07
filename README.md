@@ -21,17 +21,22 @@ from debug import Debug, Style
 ```py
 # Basic
 Debug.Log("Hello World !")
+```
 
+```py
 # Debugging
 Debug.LogError("Hello World !")
 Debug.LogWarning("Hello World !")
 Debug.LogSuccess("Hello World !")
 Debug.LogWhisper("Hello World !")
+```
 
+```py
 # Custom
 Debug.LogColor("Hello World !", Style.RED + Style.BOLD)
+```
 
-
+```py
 # Separators
 Debug.LogSeparator() 
 Debug.LogSeparator("Separator") 
