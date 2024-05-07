@@ -36,7 +36,7 @@ class Debug:
     emojisActive = True
 
     @staticmethod
-    def __get_log_prefix(level, class_name, func_name, line_number):
+    def _get_log_prefix(level, class_name, func_name, line_number):
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
         class_name_str = str(class_name)
         func_name_str = str(func_name)
@@ -55,7 +55,7 @@ class Debug:
         return prefix
 
     @staticmethod
-    def __log(message, level=Style.DARK_GRAY):
+    def _log(message, level=Style.DARK_GRAY):
         frame = inspect.currentframe().f_back.f_back
         line_number = frame.f_lineno
         class_name = frame.f_locals.get('self', '__main__').__class__.__name__
@@ -63,48 +63,114 @@ class Debug:
         prefix = ""
 
         if Debug.prefixActive:
-            prefix = Debug.__get_log_prefix(level, class_name, func_name,
+            prefix = Debug._get_log_prefix(level, class_name, func_name,
                                         line_number)
 
         print(f"{level}{prefix}{level}{message}{Style.RESET}")
 
     @staticmethod
     def Log(message):
-        Debug.__log(message)
+        Debug._log(str(message))
 
     @staticmethod
     def LogWhisper(message):
         if Debug.verbose:
-            Debug.__log(message, Style.DARK_GRAY + Style.DIM + Style.ITALIC)
+            Debug._log(str(message), Style.DARK_GRAY + Style.DIM + Style.ITALIC)
 
     @staticmethod
     def LogSuccess(message):
         if Debug.emojisActive:
-            message = "✅ - " + message
-        Debug.__log(message, Style.OK_GREEN)
+            message = "✅ - " + str(message)
+        Debug._log(str(message), Style.OK_GREEN)
 
     @staticmethod
     def LogWarning(message):
         if Debug.emojisActive:
             message = "❕ - " + message
-        Debug.__log(message, Style.WARNING)
+        Debug._log(str(message), Style.WARNING)
 
     @staticmethod
     def LogError(message):
         Debug.prefixActive = True
-        if Debug.emojisActive:
-            message = "❌ - " + message
-        Debug.__log(message, Style.FAIL + Style.BOLD)
+        Debug._log("❌ - " + message, Style.FAIL + Style.BOLD)
         if Debug.blocking == True:
             sys.exit()
         Debug.prefixActive = False
         
+    
 
     @staticmethod
     def LogColor(message, style=Style.RESET):
         if isinstance(style, list):
             style = "".join(style)
-        Debug.__log(style + message, Style.WARNING)
+        Debug._log(style + message, Style.WARNING)
+
+    
+    @staticmethod
+    def LogSeparator(msg=None, style=None):
+        log_length = 50
+
+        to_print = ""
+
+        if msg is None:
+            to_print = "-" * log_length
+        else:
+            string_length = len(str(msg))
+            separator_length = int((log_length - string_length) / 2)
+
+            if string_length < log_length:
+                to_print = "-" * separator_length + " " + str(msg) + " " + "-" * separator_length
+            else:
+                to_print = str(msg)
+        
+        
+        while len(to_print) < log_length:
+            to_print += "-"
+        
+        while len(to_print) > log_length:
+            to_print = to_print[1:]
+        
+        prefix_active = Debug.prefixActive
+        Debug.prefixActive = False
+        if style == None:
+            Debug._log(str(to_print), Style.BOLD + Style.PURPLE)
+        else:
+            Debug._log(str(to_print), style)
+        
+        Debug.prefixActive = prefix_active
+
+    @staticmethod
+    def LogFatSeparator(msg, style=None):
+        log_length = 50
+        string_length = len(str(msg))
+
+        space_length = int((log_length - string_length) / 2)
+        separator_length = log_length
+
+        
+        center = " "*space_length + str(msg) + " "*space_length
+
+        if string_length > log_length:
+            separator_length = string_length
+        else:
+            while len(center) < log_length:
+                center += " "
+            
+            while len(center) > log_length:
+                center = center[1:]
+        
+        line = "-"*separator_length
+        
+        to_print = line + "\n" + center + "\n" + line
+        
+        prefix_active = Debug.prefixActive
+        Debug.prefixActive = False
+        if style == None:
+            Debug._log(str(to_print), Style.PURPLE + Style.BOLD)
+        else:
+            Debug._log(str(to_print), style)
+        
+        Debug.prefixActive = prefix_active
 
 
 
