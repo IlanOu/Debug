@@ -2,7 +2,7 @@
 
 Simple debugger Python to show colored text in command prompt.
 
-## Installation ?
+## Installation
 
 ```bash
 pip install git+https://github.com/IlanOu/Debug.git
