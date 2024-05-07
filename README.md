@@ -77,7 +77,6 @@ Debug.verbose = False
 The Style can be used in some Debug methods (ex: `Debug.LogColor("Hello", Style.RED)`).
 
 ```py
-
 print(Style.WARNING + "WARNING !!!" + Style.ENDC)
 
 print(Style.BLUE + "Blue text" + Style.ENDC)
@@ -85,5 +84,4 @@ print(Style.BLUE + "Blue text" + Style.ENDC)
 print(Style.UNDERLINE + "Underline text" + Style.ENDC)
 
 print(Style.UNDERLINE + Style.BLUE + "Blue and underline text" + Style.ENDC)
-
 ```
