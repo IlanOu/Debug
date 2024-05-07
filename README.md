@@ -19,26 +19,57 @@ from debug import Debug, Style
 ### Debug
 
 ```py
+# Basic
 Debug.Log("Hello World !")
 
+# Debugging
 Debug.LogError("Hello World !")
 Debug.LogWarning("Hello World !")
 Debug.LogSuccess("Hello World !")
 Debug.LogWhisper("Hello World !")
 
+# Custom
 Debug.LogColor("Hello World !", Style.RED)
+
+
+# Separators
+Debug.LogSeparator() 
+Debug.LogSeparator("Yey") 
+Debug.LogSeparator("Yey", Style.BOLD)
+
+Debug.LogFatSeparator("Yey")  
+Debug.LogFatSeparator("Yey", Style.BOLD)
 ```
 
-You have parameters for the debugger :
+#### You have parameters for the debugger
+
+To enable/disable if the `Debug.LogError` is blocking
 
 ```py
 Debug.blocking = False
+```
+
+To enable/disable emojis
+
+```py
 Debug.emojisActive = False
+```
+
+To enable/disable the prefix
+
+```py
 Debug.prefixActive = False
+```
+
+To enable/disable all `Debug.LogWhisper`
+
+```py
 Debug.verbose = False
 ```
 
 ### Style
+
+The Style can be used in some Debug methods (ex: `Debug.LogColor("Hello", Style.RED)`).
 
 ```py
 
