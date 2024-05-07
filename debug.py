@@ -51,7 +51,7 @@ class Debug:
         else:
             func_name_str += "() "
 
-        prefix = f"{Style.DIM}{Style.SEPARATOR}{level}[{current_time}] - {Style.BOLD}{class_name_str}{func_name_str}{Style.RESET}{level}{Style.DIM}Line {line_number}:{Style.RESET} \n"
+        prefix = f"{Style.DIM}{Style.SEPARATOR}{level}[{current_time}] - {Style.BOLD}{class_name_str}{func_name_str}{Style.RESET}{level}{Style.DIM + Style.ITALIC}Line {line_number}:{Style.RESET}\n"
         return prefix
 
     @staticmethod
@@ -80,19 +80,19 @@ class Debug:
     @staticmethod
     def LogSuccess(message):
         if Debug.emojisActive:
-            message = "✅ - " + str(message)
+            message = "|✅| " + str(message)
         Debug._log(str(message), Style.OK_GREEN)
 
     @staticmethod
     def LogWarning(message):
         if Debug.emojisActive:
-            message = "❕ - " + message
+            message = "|🟨| " + message
         Debug._log(str(message), Style.WARNING)
 
     @staticmethod
     def LogError(message):
         Debug.prefixActive = True
-        Debug._log("❌ - " + message, Style.FAIL + Style.BOLD)
+        Debug._log("|❌| " + message, Style.FAIL + Style.BOLD)
         if Debug.blocking == True:
             sys.exit()
         Debug.prefixActive = False
