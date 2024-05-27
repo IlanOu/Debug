@@ -1,7 +1,7 @@
-
 import datetime
 import inspect
 import sys
+import shutil
 
 class Style:
     HEADER = '\033[95m'
@@ -173,5 +173,36 @@ class Debug:
             Debug._log(str(to_print), style)
         
         Debug.prefixActive = prefix_active
+        
+    @staticmethod
+    def LogPopup(message, style=Style.GREEN):
+        console_width = shutil.get_terminal_size().columns
+
+        # Diviser le message en lignes
+        lines = message.split('\n')
+
+        # Trouver la longueur de la ligne la plus longue
+        max_line_length = max(len(line) for line in lines)
+
+        # Construire le cadre supérieur
+        frame_top = "".rjust(console_width - max_line_length - 4) + "╔" + "═" * (max_line_length + 2) + "╗"
+
+        # Construire les lignes du message
+        message_lines = []
+        for line in lines:
+            padding = console_width - len(line) - (max_line_length - len(line)) - 4
+            message_line = "".rjust(padding) + "║ " + line.center(max_line_length) + " ║"
+            message_lines.append(message_line)
+
+        # Construire le cadre inférieur
+        frame_bottom = "".rjust(console_width - max_line_length - 4) + "╚" + "═" * (max_line_length + 2) + "╝"
+
+        # Afficher la popup
+        Debug.LogColor(frame_top, style)
+        for line in message_lines:
+            Debug.LogColor(line, style)
+        Debug.LogColor(frame_bottom, style)
+
+        print()  # Ajoute une ligne vide après la popup
 
 __all__ = ["Style", "Debug"]
