@@ -92,27 +92,27 @@ class Debug:
     
     @staticmethod
     def Log(message, level: LogLevel = LogLevel.INFO, emoji=None, color=None):
-        if emoji is None:
-            emoji = Debug._get_level_emoji(level)
-        if emoji:
-            message = f"{emoji} {message}"
+        # if emoji is None:
+        #     emoji = Debug._get_level_emoji(level)
+        # if emoji:
+        #     message = f"{emoji} {message}"
         
-        # Prefix
-        # frame = inspect.currentframe().f_back
-        # line_number = frame.f_lineno
-        # class_name = frame.f_locals.get('self', '__main__').__class__.__name__
-        # func_name = frame.f_code.co_name
-        prefix = ""
+        # # Prefix
+        # # frame = inspect.currentframe().f_back
+        # # line_number = frame.f_lineno
+        # # class_name = frame.f_locals.get('self', '__main__').__class__.__name__
+        # # func_name = frame.f_code.co_name
+        # prefix = ""
 
-        # if Debug.prefixActive:
-        #     prefix = Debug._get_log_prefix(class_name, func_name, line_number)
+        # # if Debug.prefixActive:
+        # #     prefix = Debug._get_log_prefix(class_name, func_name, line_number)
 
-        if color is None:
-            color = Debug._get_level_style(level)
+        # if color is None:
+        #     color = Debug._get_level_style(level)
         
-        message = f"[{color}]{message}[/{color}]"
+        # message = f"[{color}]{message}[/{color}]"
 
-        console.print(f"{prefix} {message}")
+        console.print(message)
         
     @staticmethod
     def LogSuccess(message):
