@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="debug",
-    version="0.1.5",
+    version="0.2.0",
     author="IlanOu",
     author_email="author@example.com",
     description="Une librairie Python pour le débogage et les couleurs",
@@ -17,6 +17,9 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+    ],
+    install_requires=[
+        'rich>=13.8.0',
     ],
     python_requires='>=3.6',
 )

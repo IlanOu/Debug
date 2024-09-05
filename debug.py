@@ -1,34 +1,22 @@
+from rich.console import Console
+from rich.panel import Panel
+from rich.progress import Progress
+from rich.text import Text
+from rich import box
 import datetime
 import inspect
 import sys
-import shutil
+import time
+from enum import Enum, auto
 
-class Style:
-    HEADER = '\033[95m'
-    OK_BLUE = '\033[94m'
-    OK_CYAN = '\033[96m'
-    OK_GREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
+console = Console()
 
-    RED = '\033[31m'
-    BLACK = '\033[30m'
-    GREEN = '\033[32m'
-    ORANGE = '\033[33m'
-    BLUE = '\033[34m'
-    PURPLE = '\033[35m'
-    CYAN = '\033[36m'
-    LIGHT_GREY = '\033[37m'
-    DARK_GRAY = '\033[90m'
-
-    BOLD = '\033[1m'
-    DIM = '\033[2m'
-    ITALIC = '\033[3m'
-    UNDERLINE = '\033[4m'
-
-    RESET = '\033[0m'
-    SEPARATOR = '.' * 50 + '\n'
-
+class LogLevel(Enum):
+    INFO = auto()
+    SUCCESS = auto()
+    WARNING = auto()
+    ERROR = auto()
+    WHISPER = auto()
 
 class Debug:
     verbose = True
@@ -38,171 +26,183 @@ class Debug:
     separatorChar = "-"
 
     @staticmethod
-    def _get_log_prefix(level, class_name, func_name, line_number):
+    def _get_log_prefix(class_name, func_name, line_number):
         current_time = datetime.datetime.now().strftime("%H:%M:%S")
-        class_name_str = str(class_name)
-        func_name_str = str(func_name)
-
-        if class_name_str == "__main__" or class_name_str == "str":
-            class_name_str = ""
-        else:
-            class_name_str += " : "
-
-        if func_name_str == "<module>":
-            func_name_str = ""
-        else:
-            func_name_str += "() "
-
-        prefix = f"{Style.DIM}{Style.SEPARATOR}{level}[{current_time}] - {Style.BOLD}{class_name_str}{func_name_str}{Style.RESET}{level}{Style.DIM + Style.ITALIC}Line {line_number}:{Style.RESET}\n"
-        return prefix
+        class_name_str = f"{class_name}: " if class_name != "__main__" else ""
+        func_name_str = f"{func_name}() " if func_name != "<module>" else ""
+        return f"[{current_time}] {class_name_str}{func_name_str} Line {line_number}:"
 
     @staticmethod
-    def _log(message, level=Style.DARK_GRAY):
-        frame = inspect.currentframe().f_back.f_back
+    def _get_level_style(level: LogLevel):
+        if level == LogLevel.SUCCESS:
+            return "green"
+        elif level == LogLevel.WARNING:
+            return "yellow"
+        elif level == LogLevel.ERROR:
+            return "bold red"
+        elif level == LogLevel.WHISPER:
+            return "dim italic"
+        else:
+            return ""  # Default color
+
+    @staticmethod
+    def _get_level_emoji(level: LogLevel):
+        if level == LogLevel.SUCCESS:
+            return "✅"
+        elif level == LogLevel.WARNING:
+            return "🚧"
+        elif level == LogLevel.ERROR:
+            return "❌"
+        else:
+            return ""
+
+    @staticmethod
+    def _log(message, level: LogLevel = LogLevel.INFO, color=None):
+        frame = inspect.currentframe().f_back.f_back.f_back
         line_number = frame.f_lineno
         class_name = frame.f_locals.get('self', '__main__').__class__.__name__
         func_name = frame.f_code.co_name
         prefix = ""
 
         if Debug.prefixActive:
-            prefix = Debug._get_log_prefix(level, class_name, func_name,
-                                        line_number)
+            prefix = Debug._get_log_prefix(class_name, func_name, line_number)
 
-        print(f"{level}{prefix}{level}{message}{Style.RESET}")
+        if color is None:
+            color = Debug._get_level_style(level)
+        
+        message = f"[{color}]{message}[/{color}]"
+
+        console.print(f"{prefix} {message}")
 
     @staticmethod
-    def Log(message):
-        Debug._log(str(message))
+    def Log(message, level: LogLevel = LogLevel.INFO, emoji=None, color=None):
+        if emoji is None:
+            emoji = Debug._get_level_emoji(level)
+        if emoji:
+            message = f"{emoji} {message}"
+        
+        def __log(message, level, color):
+            Debug._log(message, level, color)
+
+        try:
+            inspect.currentframe().f_back
+            Debug._log(message, level, color)
+        except:
+            __log(message, level, color)
+        
+    @staticmethod
+    def LogSuccess(message):
+        Debug.Log(message, level=LogLevel.SUCCESS)
+
+    @staticmethod
+    def LogWarning(message):
+        Debug.Log(message, level=LogLevel.WARNING)
+
+    @staticmethod
+    def LogError(message):
+        Debug.Log(message, level=LogLevel.ERROR)
+        if Debug.blocking:
+            sys.exit()
 
     @staticmethod
     def LogWhisper(message):
         if Debug.verbose:
-            Debug._log(str(message), Style.DARK_GRAY + Style.DIM + Style.ITALIC)
+            Debug.Log(message, level=LogLevel.WHISPER)
 
     @staticmethod
-    def LogSuccess(message):
-        if Debug.emojisActive:
-            message = "|✅| " + str(message)
-        Debug._log(str(message), Style.OK_GREEN)
-
-    @staticmethod
-    def LogWarning(message):
-        if Debug.emojisActive:
-            message = "|🟨| " + message
-        Debug._log(str(message), Style.WARNING)
-
-    @staticmethod
-    def LogError(message):
-        Debug.prefixActive = True
-        Debug._log("|❌| " + message, Style.FAIL + Style.BOLD)
-        if Debug.blocking == True:
-            sys.exit()
-        Debug.prefixActive = False
-        
-    
-
-    @staticmethod
-    def LogColor(message, style=Style.RESET):
-        if isinstance(style, list):
-            style = "".join(style)
-        Debug._log(style + message, Style.WARNING)
-
-    
-    @staticmethod
-    def LogSeparator(msg=None, style=None):
-        log_length = 50
-
-        to_print = ""
-
-        if msg is None:
-            to_print = Debug.separatorChar * log_length
+    def LogSeparator(msg=None, border_style="white", text_style="white"):
+        if msg:
+            console.rule(Text(msg, style=text_style), style=border_style)
         else:
-            string_length = len(str(msg))
-            separator_length = int((log_length - string_length) / 2)
-
-            if string_length < log_length:
-                to_print = Debug.separatorChar * separator_length + " " + str(msg) + " " + Debug.separatorChar * separator_length
-            else:
-                to_print = str(msg)
-        
-        
-        while len(to_print) < log_length:
-            to_print += Debug.separatorChar
-        
-        while len(to_print) > log_length:
-            to_print = to_print[1:]
-        
-        prefix_active = Debug.prefixActive
-        Debug.prefixActive = False
-        if style == None:
-            Debug._log(str(to_print), Style.BOLD + Style.PURPLE)
-        else:
-            Debug._log(str(to_print), style)
-        
-        Debug.prefixActive = prefix_active
+            console.rule(style=border_style)
 
     @staticmethod
-    def LogFatSeparator(msg, style=None):
-        log_length = 50
-        string_length = len(str(msg))
+    def LogPanel(message, title="Info", border_style=None, level: LogLevel = LogLevel.INFO):
+        style = Debug._get_level_style(level)
+        if border_style == None:
+            border_style = style
+        console.print(Panel(Text(message, style=style), title=title, border_style=border_style, box=box.ROUNDED))
 
-        space_length = int((log_length - string_length) / 2)
-        separator_length = log_length
-
-        
-        center = " "*space_length + str(msg) + " "*space_length
-
-        if string_length > log_length:
-            separator_length = string_length
-        else:
-            while len(center) < log_length:
-                center += " "
-            
-            while len(center) > log_length:
-                center = center[1:]
-        
-        line = Debug.separatorChar*separator_length
-        
-        to_print = line + "\n" + center + "\n" + line
-        
-        prefix_active = Debug.prefixActive
-        Debug.prefixActive = False
-        if style == None:
-            Debug._log(str(to_print), Style.PURPLE + Style.BOLD)
-        else:
-            Debug._log(str(to_print), style)
-        
-        Debug.prefixActive = prefix_active
-        
     @staticmethod
-    def LogPopup(message, style=Style.GREEN):
-        console_width = shutil.get_terminal_size().columns
+    def LogCard(message, separator="|", style=None, title="Info", level: LogLevel = LogLevel.INFO):
+        """
+        Affiche un message formaté en colonnes sous forme de carte encadrée.
+        Le nombre de colonnes est déterminé par le nombre de séparateurs sur chaque ligne.
 
-        # Diviser le message en lignes
-        lines = message.split('\n')
+        Args:
+            message (str): Le message à afficher.
+            separator (str): Le caractère séparateur des colonnes (par défaut "|").
+            style (str): Le style de couleur Rich pour l'affichage (par défaut "cyan").
+            title (str): Le titre de la carte (par défaut "Info").
+            level (LogLevel): Le niveau de log pour le style du message (par défaut INFO).
+        """
+        lines = message.split("\n")
+        column_lengths = []
 
-        # Trouver la longueur de la ligne la plus longue
-        max_line_length = max(len(line) for line in lines)
-
-        # Construire le cadre supérieur
-        frame_top = "".rjust(console_width - max_line_length - 4) + "╔" + "═" * (max_line_length + 2) + "╗"
-
-        # Construire les lignes du message
-        message_lines = []
+        # Calculer la largeur maximale de chaque colonne
         for line in lines:
-            padding = console_width - len(line) - (max_line_length - len(line)) - 4
-            message_line = "".rjust(padding) + "║ " + line.center(max_line_length) + " ║"
-            message_lines.append(message_line)
+            columns = line.split(separator)
+            for i, col in enumerate(columns):
+                if i >= len(column_lengths):
+                    column_lengths.append(0)
+                column_lengths[i] = max(column_lengths[i], len(col.strip()))
 
-        # Construire le cadre inférieur
-        frame_bottom = "".rjust(console_width - max_line_length - 4) + "╚" + "═" * (max_line_length + 2) + "╝"
+        # Formater les lignes avec un alignement centré pour chaque colonne
+        output_lines = []
+        for line in lines:
+            columns = line.split(separator)
+            formatted_columns = [col.strip().center(column_lengths[i]) for i, col in enumerate(columns)]
+            formatted_line = f" {separator} ".join(formatted_columns)
+            output_lines.append(formatted_line)
 
-        # Afficher la popup
-        Debug.LogColor(frame_top, style)
-        for line in message_lines:
-            Debug.LogColor(line, style)
-        Debug.LogColor(frame_bottom, style)
+        # Créer une carte avec Rich Panel
+        level_style = Debug._get_level_style(level)
+        if style == None:
+            style = level_style
+        card_content = Text("\n".join(output_lines), style=level_style)
+        console.print(Panel(card_content, title=title, border_style=style, expand=False))
 
-        print()  # Ajoute une ligne vide après la popup
 
-__all__ = ["Style", "Debug"]
+    @staticmethod
+    def LogColumns(message, separator="|", style="cyan", level: LogLevel = LogLevel.INFO):
+        """
+        Affiche un message avec plusieurs colonnes. Le nombre de colonnes est déterminé par le nombre de séparateurs sur chaque ligne.
+
+        Args:
+            message (str): Le message à afficher.
+            separator (str): Le caractère séparateur des colonnes (par défaut "|").
+            style (str): Le style de couleur Rich pour l'affichage (par défaut "cyan").
+            level (LogLevel): Le niveau de log pour le style du message (par défaut INFO).
+        """
+        lines = message.split("\n")
+        column_lengths = []
+
+        # Calculer la largeur maximale de chaque colonne
+        for line in lines:
+            columns = line.split(separator)
+            for i, col in enumerate(columns):
+                if i >= len(column_lengths):
+                    column_lengths.append(0)
+                column_lengths[i] = max(column_lengths[i], len(col.strip()))
+
+        # Formater les lignes avec un alignement centré pour chaque colonne
+        output_lines = []
+        for line in lines:
+            columns = line.split(separator)
+            formatted_columns = [col.strip().center(column_lengths[i]) for i, col in enumerate(columns)]
+            formatted_line = f" {separator} ".join(formatted_columns)
+            output_lines.append(formatted_line)
+
+        # Afficher le résultat avec Rich
+        level_style = Debug._get_level_style(level)
+        console.print("\n".join(output_lines), style=level_style)
+
+    @staticmethod
+    def show_progress(task_name, total):
+        with Progress() as progress:
+            task = progress.add_task(f"[green]{task_name}[/green]", total=total)
+            for _ in range(total):
+                progress.update(task, advance=1)
+                time.sleep(0.1)
+
+__all__ = ["LogLevel", "Debug"]
