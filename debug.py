@@ -42,6 +42,8 @@ class Debug:
             return "bold red"
         elif level == LogLevel.WHISPER:
             return "dim italic"
+        elif level == LogLevel.INFO:
+            return "gray"
         else:
             return ""  # Default color
 
@@ -92,7 +94,7 @@ class Debug:
     
     @staticmethod
     def BOG(message):
-        Debug._logger(message, level=LogLevel.SUCCESS)
+        Debug._logger(message, level=LogLevel.INFO)
         
     @staticmethod
     def LogSuccess(message):
