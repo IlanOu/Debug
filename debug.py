@@ -98,14 +98,14 @@ class Debug:
             message = f"{emoji} {message}"
         
         # Prefix
-        frame = inspect.currentframe().f_back
-        line_number = frame.f_lineno
-        class_name = frame.f_locals.get('self', '__main__').__class__.__name__
-        func_name = frame.f_code.co_name
+        # frame = inspect.currentframe().f_back
+        # line_number = frame.f_lineno
+        # class_name = frame.f_locals.get('self', '__main__').__class__.__name__
+        # func_name = frame.f_code.co_name
         prefix = ""
 
-        if Debug.prefixActive:
-            prefix = Debug._get_log_prefix(class_name, func_name, line_number)
+        # if Debug.prefixActive:
+        #     prefix = Debug._get_log_prefix(class_name, func_name, line_number)
 
         if color is None:
             color = Debug._get_level_style(level)
