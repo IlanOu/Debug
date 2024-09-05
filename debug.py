@@ -112,7 +112,7 @@ class Debug:
         
         # message = f"[{color}]{message}[/{color}]"
 
-        console.print(message)
+        print(message)
         
     @staticmethod
     def LogSuccess(message):
