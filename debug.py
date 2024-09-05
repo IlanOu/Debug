@@ -43,7 +43,7 @@ class Debug:
         elif level == LogLevel.WHISPER:
             return "dim italic"
         elif level == LogLevel.INFO:
-            return "gray"
+            return "dim"
         else:
             return ""  # Default color
 
