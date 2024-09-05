@@ -75,7 +75,7 @@ class Debug:
         console.print(f"{prefix} {message}")
 
     @staticmethod
-    def Log(message, level: LogLevel = LogLevel.INFO, emoji=None, color=None):
+    def _logger(message, level: LogLevel = LogLevel.INFO, emoji=None, color=None):
         if emoji is None:
             emoji = Debug._get_level_emoji(level)
         if emoji:
@@ -89,25 +89,49 @@ class Debug:
             Debug._log(message, level, color)
         except:
             __log(message, level, color)
+    
+    @staticmethod
+    def Log(message, level: LogLevel = LogLevel.INFO, emoji=None, color=None):
+        if emoji is None:
+            emoji = Debug._get_level_emoji(level)
+        if emoji:
+            message = f"{emoji} {message}"
+        
+        # Prefix
+        frame = inspect.currentframe().f_back
+        line_number = frame.f_lineno
+        class_name = frame.f_locals.get('self', '__main__').__class__.__name__
+        func_name = frame.f_code.co_name
+        prefix = ""
+
+        if Debug.prefixActive:
+            prefix = Debug._get_log_prefix(class_name, func_name, line_number)
+
+        if color is None:
+            color = Debug._get_level_style(level)
+        
+        message = f"[{color}]{message}[/{color}]"
+
+        console.print(f"{prefix} {message}")
         
     @staticmethod
     def LogSuccess(message):
-        Debug.Log(message, level=LogLevel.SUCCESS)
+        Debug._logger(message, level=LogLevel.SUCCESS)
 
     @staticmethod
     def LogWarning(message):
-        Debug.Log(message, level=LogLevel.WARNING)
+        Debug._logger(message, level=LogLevel.WARNING)
 
     @staticmethod
     def LogError(message):
-        Debug.Log(message, level=LogLevel.ERROR)
+        Debug._logger(message, level=LogLevel.ERROR)
         if Debug.blocking:
             sys.exit()
 
     @staticmethod
     def LogWhisper(message):
         if Debug.verbose:
-            Debug.Log(message, level=LogLevel.WHISPER)
+            Debug._logger(message, level=LogLevel.WHISPER)
 
     @staticmethod
     def LogSeparator(msg=None, border_style="white", text_style="white"):

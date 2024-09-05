@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="debug",
-    version="0.2.0",
+    version="0.2.1",
     author="IlanOu",
     author_email="author@example.com",
     description="Une librairie Python pour le débogage et les couleurs",
