@@ -92,7 +92,7 @@ class Debug:
     
     @staticmethod
     def Log(message, level: LogLevel = LogLevel.INFO, emoji=None, color=None):
-        Debug._logger(message)
+        Debug._logger(message, level=level, emoji=emoji, color=color)
         
     @staticmethod
     def LogSuccess(message):
