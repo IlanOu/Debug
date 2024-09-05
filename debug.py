@@ -91,7 +91,7 @@ class Debug:
             __log(message, level, color)
     
     @staticmethod
-    def Log(message):
+    def BOG(message):
         Debug._logger(message, level=LogLevel.INFO)
         
     @staticmethod
